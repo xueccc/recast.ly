@@ -26,14 +26,12 @@ class App extends React.Component {
   }
   
   search(query) {
-    console.log(query);
     var options = {
       key: window.YOUTUBE_API_KEY,
       query: query,
       max: 5
     };
-    var appProps = this.props;
-    appProps.searchYouTube(options, (videos) => { this.setState({collection: videos, selected: videos[0]}); } );
+    this.props.searchYouTube(options, (videos) => { this.setState({collection: videos, selected: videos[0]}); } );
   }
   
   render() {
@@ -42,7 +40,7 @@ class App extends React.Component {
         <nav className="navbar">
           <div className="col-md-6 offset-md-3">
             <div>
-              <Search search={this.search}/>
+              <Search search={_.debounce(this.search, 500)}/>
             </div>
           </div>
         </nav>
