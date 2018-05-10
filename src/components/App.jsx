@@ -1,10 +1,22 @@
 class App extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      selected: window.exampleVideoData[0]// the selected video,
+      collection: window.exampleVideoData,
+      selected: {
+        id: {videoId: ''},
+        snippet: {
+          title: '',
+          description: '',
+        }
+      }
     };
     this.handler = this.handler.bind(this);
+    this.search = this.search.bind(this);
+  }
+  
+  componentDidMount() {
+    this.search('funny dog');
   }
   
   handler(selectedVideo) {
@@ -13,23 +25,36 @@ class App extends React.Component {
     });
   }
   
+  search(query) {
+    console.log(query);
+    var options = {
+      key: window.YOUTUBE_API_KEY,
+      query: query,
+      max: 5
+    };
+    var appProps = this.props;
+    appProps.searchYouTube(options, (videos) => { this.setState({collection: videos, selected: videos[0]}); } );
+  }
+  
   render() {
     return (
       <div>
         <nav className="navbar">
           <div className="col-md-6 offset-md-3">
-            <div><h5><em>search</em> view goes here</h5></div>
+            <div>
+              <Search search={this.search}/>
+            </div>
           </div>
         </nav>
         <div className="row">
           <div className="col-md-7">
             <div>
-              <VideoPlayer video={this.state.selected}/>
+              <VideoPlayer video={this.state.selected} />
             </div>
           </div>
           <div className="col-md-5">
             <div>
-              <VideoList handler={this.handler} videos={window.exampleVideoData}/>
+              <VideoList handler={this.handler} videos={this.state.collection}/>
             </div>
           </div>
         </div>
