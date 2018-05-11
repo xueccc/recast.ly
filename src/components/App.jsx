@@ -9,7 +9,16 @@ class App extends React.Component {
           title: '',
           description: '',
         }
-      }
+      },
+      comments: [{
+        snippet: {
+          topLevelComment: {
+            snippet: {
+              textDisplay: ''
+            }
+          }
+        }
+      }]
     };
     this.handler = this.handler.bind(this);
     this.search = this.search.bind(this);
@@ -20,8 +29,11 @@ class App extends React.Component {
   }
   
   handler(selectedVideo) {
-    this.setState({
-      selected: selectedVideo
+    this.props.searchComments(selectedVideo.id.videoId, (comments) => {
+      this.setState({
+        selected: selectedVideo,
+        comments: comments.items
+      });
     });
   }
   
@@ -31,7 +43,16 @@ class App extends React.Component {
       query: query,
       max: 5
     };
-    this.props.searchYouTube(options, (videos) => { this.setState({collection: videos, selected: videos[0]}); } );
+    this.props.searchYouTube(options, (videos) => { 
+      this.setState({
+        collection: videos,
+        selected: videos[0], 
+      }); 
+      
+      this.props.searchComments(videos[0].id.videoId, (comments) => {
+        this.setState({comments: comments.items});
+      });
+    });
   }
   
   render() {
@@ -48,6 +69,9 @@ class App extends React.Component {
           <div className="col-md-7">
             <div>
               <VideoPlayer video={this.state.selected} />
+            </div>
+            <div>
+              <VideoDetails comments={this.state.comments}/>
             </div>
           </div>
           <div className="col-md-5">
